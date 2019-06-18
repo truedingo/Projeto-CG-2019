@@ -46,11 +46,12 @@ GLfloat  obsPfin[] ={obsPini[0]-rVisao*cos(aVisao), obsPini[1], obsPini[2]-rVisa
 
 //thread para movimento
 pthread_t ball2_thread, ball1_thread;
+
+//flags de controlo
 bool col_flag1=0;
 bool col_flag2=0;
 bool accel_flag1=0;
 bool accel_flag2=0;
-bool part_flag=0;
 
 
 //=================================================================== TEXTURAS
@@ -74,6 +75,8 @@ GLfloat rb2x     = 13.5;
 GLfloat rb2y     = 7.8;
 GLfloat rb2z     = -6;
 
+
+
 //collision particles
 #define frand()			((float)rand()/RAND_MAX)
 #define MAX_PARTICULAS  2500
@@ -91,7 +94,8 @@ typedef struct {
     GLfloat ax, ay, az; // aceleracao
 } Particle;
 
-Particle  col_particulas[MAX_PARTICULAS];
+Particle  col_particulas1[MAX_PARTICULAS];
+Particle  col_particulas2[MAX_PARTICULAS];
 
 //------------------------------------------------------------ Texturas
 GLuint   texture[6];
@@ -143,8 +147,6 @@ GLfloat lEspec[4]={0.7,0.7, 0.7,0.7};// "brilho"
 GLfloat lDif[4]={0.3,0.3,0.3,0.3};	   // "cor"
 
 bool active=false;
-
-
 
 //================================================================================
 //=========================================================================== INIT
@@ -237,7 +239,10 @@ void initTexturas()
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
                  imag.GetNumCols(),
                  imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-                 imag.ImageData());    
+                 imag.ImageData());
+
+
+
 }
 
 
@@ -267,17 +272,26 @@ void initLights(void){
 }
 
 //==========================================================
-void initParticulas(Particle *particula)
+void initParticulas(Particle *particula, int ballid)
 {
  GLfloat v, theta, phi;
  int i;
  GLfloat px, py, pz;
  GLfloat ps;
 
-	px = b1x;
-	py = b1y;
-	pz = b1z;
-	ps = 1.5;
+    if(ballid == 1){
+        px = b1x;
+	    py = b1y;
+	    pz = b1z;
+	    ps = 0.05;
+    }
+    else{
+        px = b2x;
+	    py = b2y;
+	    pz = b2z;
+	    ps = 0.05;
+    }
+
 
 
 
@@ -302,13 +316,13 @@ void initParticulas(Particle *particula)
 
 	particula[i].r = 1.0f;
 	particula[i].g = 1.0f;	
-	particula[i].b = 1.0f;	
+	particula[i].b = 0.0f;	
 	particula[i].life = 1.0f;		                
-	particula[i].fade = 0.00001f;	// Em 100=1/0.01 iteracoes desaparece
+	particula[i].fade = 0.001f;	// Em 100=1/0.01 iteracoes desaparece
 	}
 }
 
-void showParticulas(Particle *particula, int sistema) {
+void showParticulas(Particle *particula, int sistema, int texture_no) {
  int i;
  int numero;
 
@@ -316,14 +330,16 @@ void showParticulas(Particle *particula, int sistema) {
  
  for (i=0; i<MAX_PARTICULAS; i++)
 	{
+     glEnable(GL_TEXTURE_2D);
 
-	glColor4f(1,1,1, particula[i].life);
+    glBindTexture(GL_TEXTURE_2D,texture[texture_no]);
+	//glColor4f(particula[i].r,particula[i].g,particula[i].b, particula[i].life);
  	glBegin(GL_QUADS);				        
 		glTexCoord2d(0,0); glVertex3f(particula[i].x -particula[i].size, particula[i].y -particula[i].size, particula[i].z);      
 		glTexCoord2d(1,0); glVertex3f(particula[i].x +particula[i].size, particula[i].y -particula[i].size, particula[i].z);        
 		glTexCoord2d(1,1); glVertex3f(particula[i].x +particula[i].size, particula[i].y +particula[i].size, particula[i].z);            
 		glTexCoord2d(0,1); glVertex3f(particula[i].x -particula[i].size, particula[i].y +particula[i].size, particula[i].z);       
-	glEnd();	
+    glEnd(); 	
 	particula[i].x += particula[i].vx;
     particula[i].y += particula[i].vy;
     particula[i].z += particula[i].vz;
@@ -331,7 +347,7 @@ void showParticulas(Particle *particula, int sistema) {
     particula[i].vy += particula[i].ay;
     particula[i].vz += particula[i].az;
 	particula[i].life -= particula[i].fade;	
-    
+     glDisable(GL_TEXTURE_2D);
 	}
 }
 
@@ -431,6 +447,8 @@ void drawBola( )
 		gluSphere ( bola, 0.5, 150, 150);
      glPopMatrix();	
 	glDisable(GL_TEXTURE_2D);
+        glFlush();
+    glutPostRedisplay();
 
 
 }
@@ -455,14 +473,14 @@ void drawBola2( )
 
 void drawEscada( )
 {
-    
+     glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
     glTranslatef (0, -0.01, 10.0);
     glScalef( 6, 5 ,5);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    //glColor3f(1.0f, 1.0f, 1.0f);
     
-    glEnable(GL_TEXTURE_2D);
+   
     for( int p = 0; p < facesESC; p++ ){
         if (p%2==0)
             glBindTexture(GL_TEXTURE_2D,texture[2]);
@@ -483,13 +501,13 @@ void drawEscada( )
 
 void drawEscadaDireita( )
 {
-    
+    glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
     glRotatef(-90, 0, 1, 0);
     glTranslatef (-5.9, 3.99, 0.0);
     glScalef( 3, 5 ,5);
-    glEnable(GL_TEXTURE_2D);
+    
     for( int p = 0; p < facesESC; p++ ){
         if (p%2==0)
             glBindTexture(GL_TEXTURE_2D,texture[2]);
@@ -503,19 +521,19 @@ void drawEscadaDireita( )
         glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, poligono);
     }
     glPopMatrix();
-    
+    glDisable(GL_TEXTURE_2D);
 }
 
 void drawEscadaEsquerda( )
 {
-    
+    glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
     glRotatef(90, 0, 1, 0);
     glTranslatef (5.9, 3.99, 0.0);
     glScalef( 3, 5 ,5);
     
-    glEnable(GL_TEXTURE_2D);
+    
     for( int p = 0; p < facesESC; p++ ){
         if (p%2==0)
             glBindTexture(GL_TEXTURE_2D,texture[2]);
@@ -530,6 +548,7 @@ void drawEscadaEsquerda( )
     }
     
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
     
 }
 
@@ -557,7 +576,10 @@ void init(void) {
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
 	  
 	initLights();
-    initParticulas(col_particulas);
+
+    initParticulas(col_particulas1, 1);
+    initParticulas(col_particulas2, 2);
+
 }
 
 
@@ -654,15 +676,15 @@ void display(void){
     drawParedeFrente();
     drawParedeDireita();
     drawParedeEsquerda();
-    drawBola();
-    drawBola2();
+
     drawEscada();
     drawEscadaDireita();
     drawEscadaEsquerda();
-
+    drawBola();
+    drawBola2();
     if(active == true){
-        showParticulas(col_particulas, 1);
-        
+        showParticulas(col_particulas1, 1, 4);
+        showParticulas(col_particulas2, 1, 5);  
         
     }
     
@@ -726,6 +748,8 @@ void *move_ball2(void *vargp){
     while(b2y > 4.4 && accel_flag2 == 0){
         if(collisionDetectionBalls(b1x, b2x, b1y, b2y, 0.5, 0.5)){
             col_flag2 = 1;
+            initParticulas(col_particulas2, 2);
+            active=true;
             break;
         }
         usleep(5);
@@ -734,6 +758,7 @@ void *move_ball2(void *vargp){
     while(b2x > -4 && col_flag2 == 0 && accel_flag2 == 0){
         if(collisionDetectionBalls(b1x, b2x, b1y, b2y, 0.5, 0.5)){
              //distance between ball centers
+
             float distance = sqrtf((b1x - b2x)*(b1x-b2x)+(b1y-b2y)*(b1y-b2y));
             float overlap = (distance - 1)/2;
 
@@ -741,8 +766,10 @@ void *move_ball2(void *vargp){
             b2x-= overlap * (b2x - b1x) / distance;
 
             accel_flag2=1;
+            
             //resolver colisão
-            //b2x-=3;
+            initParticulas(col_particulas2, 2);
+            active=true;
             break;
         }
         usleep(5);
@@ -791,6 +818,8 @@ void *move_ball1(void *vargp){
     while(b1y > 4.4 && accel_flag1 == 0){
         if(collisionDetectionBalls(b1x, b2x, b1y, b2y, 0.5, 0.5)){
             col_flag1 = 1;
+            initParticulas(col_particulas1, 1);
+            active=true;
             break;
         }
         usleep(5);
@@ -801,11 +830,10 @@ void *move_ball1(void *vargp){
             //distance between ball centers
             float distance = sqrtf((b1x - b2x)*(b1x-b2x)+(b1y-b2y)*(b1y-b2y));
             float overlap = (distance - 1)/2;
-
             //ajustar a distância da colisão
             b1x+= overlap * (b1x - b2x) / distance;
             accel_flag1=1;
-            part_flag = 1;
+            initParticulas(col_particulas1, 1);
             active=true;
             break;
         }
@@ -925,7 +953,6 @@ void teclasNotAscii(int key, int x, int y)
 
 void Timer(int value)
 {
-    initParticulas(col_particulas);
     glutPostRedisplay();
     glutTimerFunc(msec,Timer, 1);
 }
