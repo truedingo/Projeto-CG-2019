@@ -53,6 +53,9 @@ bool col_flag2=0;
 bool accel_flag1=0;
 bool accel_flag2=0;
 
+bool light_flag = 0;
+bool trans_flag = 0;
+
 
 //=================================================================== TEXTURAS
 
@@ -357,6 +360,13 @@ void showParticulas(Particle *particula, int sistema, int texture_no) {
 //================================================================================
 
 void drawChao(){
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
     glEnable(GL_TEXTURE_2D);
@@ -377,6 +387,13 @@ void drawChao(){
 
 
 void drawParedeFrente(){
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
     glEnable(GL_TEXTURE_2D);
@@ -396,6 +413,14 @@ void drawParedeFrente(){
 }
 
 void drawParedeDireita(){
+
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
     glEnable(GL_TEXTURE_2D);
@@ -415,6 +440,14 @@ void drawParedeDireita(){
 }
 
 void drawParedeEsquerda(){
+
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Chao y=0
     glEnable(GL_TEXTURE_2D);
@@ -435,6 +468,13 @@ void drawParedeEsquerda(){
 
 void drawBola( )
 {
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
 	//------------------------- Bola
     
 	glEnable(GL_TEXTURE_2D);
@@ -455,6 +495,13 @@ void drawBola( )
 
 void drawBola2( )
 {
+
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
 	//------------------------- Bola
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[5]);
@@ -473,6 +520,13 @@ void drawBola2( )
 
 void drawEscada( )
 {
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
+
      glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
@@ -501,6 +555,12 @@ void drawEscada( )
 
 void drawEscadaDireita( )
 {
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
@@ -526,6 +586,12 @@ void drawEscadaDireita( )
 
 void drawEscadaEsquerda( )
 {
+    if(light_flag == 1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    }
+    else{
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
     glEnable(GL_TEXTURE_2D);
     //------------------------- ESCADA
     glPushMatrix();
@@ -920,8 +986,14 @@ void keyboard(unsigned char key, int x, int y){
             reset_ball2();
             break;
             //--------------------------- Escape
-        case '7':
-            active=false;
+        case 'R':
+        case 'r':
+            if(light_flag == 0){
+                light_flag = 1;
+            }
+            else{
+                light_flag=0;
+            }
             break;
         case 27:
             exit(0);
