@@ -1017,10 +1017,16 @@ void teclasNotAscii(int key, int x, int y)
     if(key == GLUT_KEY_LEFT){
         aVisao = (aVisao + 0.1);
         aFoco=aFoco-0.1;
+        if(aVisao > 2.4){
+            aVisao=2.4;
+        }
     }		
     if(key == GLUT_KEY_RIGHT){
         aVisao = (aVisao - 0.1);
         aFoco=aFoco+0.1;
+        if(aVisao < 0.7){
+            aVisao = 0.7;
+        }
     }
     
     updateVisao();
