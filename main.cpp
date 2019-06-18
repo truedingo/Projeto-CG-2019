@@ -684,7 +684,8 @@ void display(void){
     drawBola2();
     if(active == true){
         showParticulas(col_particulas1, 1, 4);
-        showParticulas(col_particulas2, 1, 5);  
+        showParticulas(col_particulas2, 1, 5);
+        
         
     }
     
@@ -830,6 +831,7 @@ void *move_ball1(void *vargp){
             //distance between ball centers
             float distance = sqrtf((b1x - b2x)*(b1x-b2x)+(b1y-b2y)*(b1y-b2y));
             float overlap = (distance - 1)/2;
+
             //ajustar a distância da colisão
             b1x+= overlap * (b1x - b2x) / distance;
             accel_flag1=1;
@@ -908,11 +910,13 @@ void keyboard(unsigned char key, int x, int y){
         case '3':
             col_flag1=0;
             accel_flag1=0;
+            active=false;
             reset_ball1();
             break;
         case '4':
             accel_flag2=0;
             col_flag2=0;
+            active=false;
             reset_ball2();
             break;
             //--------------------------- Escape
